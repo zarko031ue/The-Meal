@@ -1,0 +1,31 @@
+.letters {
+    display: flex;
+    justify-content: space-evenly;
+    align-content: center;
+    width: 100%;
+    background-color: rgb(172, 153, 153);
+    color: white;
+    margin-bottom: 15px;
+    .box {
+        display: flex;
+        justify-content: center;
+        align-content: center;
+      }
+}
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+td, th {
+  border: 1px solid #dddddd;   
+  text-align: left;
+  padding: 8px;
+  }
+
+img{
+    height: 100px;
+    border-radius: 10px;
+}

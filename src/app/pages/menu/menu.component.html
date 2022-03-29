@@ -1,0 +1,34 @@
+<div class="banner"></div>
+<ul class="nav" >
+    <li class="nav-item">
+      <a class="nav-link active" href="#"></a>
+    </li>
+</ul>
+<div class="container" >
+    <div class="form-group">
+        <div class="search-content">
+            <input type="text" #searchTerm>
+            <button class="ml-2" type="button" (click)="searchByCategory(searchTerm.value)">Search</button>
+        </div>
+    </div>
+    
+    <div class="row justify-content-between">
+        <div class="col">
+            <h5>Food Categories:</h5>
+            <div class="food-categories" *ngFor="let category of mealCategories?.meals | search: searchKey : 'strCategory'">
+                <a [routerLink]="[category.strCategory]" (click)="filterByMealCategory(category.strCategory)">{{category.strCategory}}</a>
+            </div>
+        </div>
+        <div class="col">
+            <h5>National Dishes:</h5>
+            <div class="national-dishes" *ngFor="let category of nationalDishesCategories?.meals | search: searchKey : 'strArea' ">
+                <a [routerLink]="[category.strArea]" (click)="filterByAreaCategory(category.strArea)">{{category.strArea}}</a>
+            </div>
+        </div>
+        <div class="col">
+            <button [routerLink]="['/all-meals']" class="btn btn-success mr-2">All Meals</button>
+        </div>
+    </div>
+</div>
+
+
