@@ -107,7 +107,7 @@ export class FoodEditComponent implements OnInit {
       form.value.id, form.value.name, form.value.imagePath,
     )
     if(this.editMode){
-      this.foodComponent.updateMeal(this.id, newMeal)
+      this.foodComponent.updateMeal(form.value.id,form.value.name, form.value.imagePath);
     } else {
       this.foodComponent.addMeal(form.value.id, form.value.imagePath, form.value.name);
     }

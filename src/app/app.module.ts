@@ -20,6 +20,8 @@ import { FoodEditComponent } from './pages/menu/food-edit/food-edit.component';
 import { AllMealsComponent } from './pages/all-meals/all-meals.component';
 import { MealEditComponent } from './pages/all-meals/meal-edit/meal-edit.component'; 
 import { MealDetailsComponent } from './pages/all-meals/meal-details/meal-details.component';
+import { TableModule } from 'primeng/table';
+
 
 @NgModule({
   declarations: [
@@ -45,6 +47,7 @@ import { MealDetailsComponent } from './pages/all-meals/meal-details/meal-detail
     HttpClientModule,
     NgxPaginationModule,
     Ng2OrderModule,
+    TableModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

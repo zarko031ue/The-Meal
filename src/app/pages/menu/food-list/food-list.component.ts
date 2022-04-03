@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { FormArray, FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { switchMap } from 'rxjs';
+import { map, of, switchMap } from 'rxjs';
+import { TableColumn } from 'src/app/models/column.model';
 import { Meal } from 'src/app/models/meal';
 import { MealData } from 'src/app/models/mealBody.model';
+import { Columns } from 'src/app/services/columns';
 import { MenuService } from 'src/app/services/menu.service';
 
 @Component({
@@ -11,8 +14,9 @@ import { MenuService } from 'src/app/services/menu.service';
   styleUrls: ['./food-list.component.scss'],
 })
 export class FoodListComponent implements OnInit {
-  meals: Meal;
-  mealsArea: Meal;
+  meals: MealData[] = [];
+  mealsArea: MealData[] = [];
+  filteredMeals = [];
   category: string;
   //Sorting
   key: string;
@@ -24,29 +28,69 @@ export class FoodListComponent implements OnInit {
   sarchTerm: string = '';
   // Search change by name or ingredients
   ingredients = false;
+  columns: TableColumn[] = [];
+
+  form = this.fb.group({
+    columns: this.fb.array([]),
+  });
+
+  get filters() {
+    return this.form.get('columns') as FormArray;
+  }
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private menuService: MenuService
+    private menuService: MenuService,
+    private columnsService: Columns,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
     this.filterByMealCategory();
     this.filterByAreaCategory();
+    this.columns = this.columnsService.columns;
+
+    this.columns.forEach((col) => {
+      this.filters.push(
+        this.fb.group({
+          field: col.field,
+          name: '',
+        })
+      );
+    });
+
+    this.filters.valueChanges.subscribe((val) => {
+      val.forEach((value) => {
+        this.filteredMeals = this.meals.filter((meal) => {
+          return meal[value.field]
+            .toLowerCase()
+            .includes(value.name.toLowerCase());
+        });
+      });
+    });
   }
+
+  
+   
+  
 
   filterByMealCategory() {
     this.route.params
       .pipe(
         switchMap((params) => {
           this.category = params['category'];
-          return this.menuService.filterByMealCategory(this.category);
+          return this.menuService.filterByMealCategory(this.category).pipe(
+            map((meals: Meal) => {
+              return meals.meals;
+            })
+          );
         })
       )
-      .subscribe((meals: Meal) => {
+      .subscribe((meals: any) => {
         this.meals = meals;
-        console.log('cat', meals);
+        this.filteredMeals = meals;
+        console.log('cat', this.meals);
       });
   }
 
@@ -55,12 +99,15 @@ export class FoodListComponent implements OnInit {
       .pipe(
         switchMap((params) => {
           this.category = params['category'];
-          return this.menuService.filterByAreaCategory(this.category);
+          return this.menuService.filterByAreaCategory(this.category).pipe(
+            map((meals:Meal) => {
+              return meals.meals;
+            })
+          );
         })
       )
-      .subscribe((mealsByArea: Meal) => {
-        this.mealsArea = mealsByArea;
-        console.log(mealsByArea);
+      .subscribe((meals:any) => {
+        this.mealsArea = meals;
       });
   }
 
@@ -70,17 +117,22 @@ export class FoodListComponent implements OnInit {
   }
 
   searchByIngredients(searchTerm: string) {
+    console.log(searchTerm);
     if (searchTerm !== '') {
       this.menuService
         .searchByMainIngredients(searchTerm)
-        .subscribe((meals: Meal) => {
-          this.meals = meals;
+        .pipe(
+          map((meal) => {
+            return meal.meals;
+          })
+        )
+        .subscribe((meals: any) => {
+          this.filteredMeals = meals;
         });
     }
   }
-
-  searchByName(searchTerm: string) {
-    this.searchKey = searchTerm;
+  search(event: any) {
+    this.searchKey = (event.target as HTMLInputElement).value;
   }
 
   sort(key: string) {
@@ -88,17 +140,33 @@ export class FoodListComponent implements OnInit {
     this.reverse = !this.reverse;
   }
 
-  addMeal(id: string, foodImg: string, name: string){
-    let data:any = {idMeal:id, strMealThumb:foodImg, strMeal: name}
-    this.meals.meals.push(data); 
- }
- 
-  updateMeal(idMeal: string, newMeal: MealData) {
-   this.meals.meals[idMeal] = newMeal
-   console.log( 'mealID', this.meals.meals[idMeal])
- }
+
+  addMeal(id: string, foodImg: string, name: string) {
+    let data: any = { idMeal: id, strMealThumb: foodImg, strMeal: name };
+    this.meals.push(data);
+  }
+
+  updateMeal(idMeal: string, strMeal: string, strMealThumb: string) {
+    console.log('click', idMeal);
+    let data: MealData = {
+      idMeal: idMeal,
+      strMealThumb: strMealThumb,
+      strMeal: strMeal,
+    };
+    of(this.meals)
+      .pipe(
+        map((meal) => {
+          return meal.map((meal) => {
+            return meal.idMeal === idMeal ? { ...meal, ...data } : meal;
+          });
+        })
+      )
+      .subscribe((meal: any) => {
+        this.filteredMeals = meal;
+      });
+  }
 
   onNewRecipe() {
-    this.router.navigate(['new'], {relativeTo: this.route});
+    this.router.navigate(['new'], { relativeTo: this.route });
   }
 }

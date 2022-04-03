@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { FormArray, FormBuilder } from '@angular/forms';
 import { Meal } from 'src/app/models/meal';
 import { MenuService } from 'src/app/services/menu.service';
 
@@ -9,29 +9,55 @@ import { MenuService } from 'src/app/services/menu.service';
   styleUrls: ['./menu.component.scss'],
 })
 export class MenuComponent implements OnInit {
-  mealCategories: any;
-  nationalDishesCategories: Meal;
+  mealCategories: Meal[];
+  nationalDishesCategories: Meal[];
   searchKey: string = '';
   searchTerm: string = '';
-  constructor(private menuService: MenuService, private router: Router) {}
+  filteredMealsCategories = [];
+  filteredNationalCategories = [];
+
+
+  form = this.fb.group({
+    value: ['']
+  })
+  
+  get filters() {
+    return this.form.get('value')
+  }
+
+  constructor(private menuService: MenuService, private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.getMealCategories();
     this.getNationalDishesCategories();
-
+   
+    this.filters.valueChanges.subscribe(val => {
+      console.log(val)
+      this.filteredMealsCategories = this.mealCategories.filter(meal => {
+         return meal['strCategory'].toLowerCase().includes(val.toLowerCase())
+      })
+    })
+    this.filters.valueChanges.subscribe(val => {
+      console.log(val)
+      this.filteredNationalCategories = this.nationalDishesCategories.filter(meal => {
+         return meal['strArea'].toLowerCase().includes(val.toLowerCase())
+      })
+    })
   }
 
   getMealCategories() {
-    this.menuService.getMealCategories().subscribe((categories: Meal) => {
-      this.mealCategories = categories;
+    this.menuService.getMealCategories().subscribe((categories: any) => {
+      this.mealCategories = categories.meals
+      this.filteredMealsCategories = categories.meals
     });
   }
 
   getNationalDishesCategories() {
     this.menuService
       .getNationalDishesCategories()
-      .subscribe((nationalDishesCategories: Meal) => {
-        this.nationalDishesCategories = nationalDishesCategories;
+      .subscribe((nationalDishesCategories: any) => {
+        this.nationalDishesCategories = nationalDishesCategories.meals
+        this.filteredNationalCategories = nationalDishesCategories.meals
       });
   }
 
@@ -47,7 +73,7 @@ export class MenuComponent implements OnInit {
     });
   }
 
-  searchByCategory(searchTerm: string) {
-    this.searchKey = searchTerm;
+  onClearSearch(){
+    this.searchKey = '';
   }
 }
