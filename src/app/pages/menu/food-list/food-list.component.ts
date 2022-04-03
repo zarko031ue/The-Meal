@@ -155,8 +155,8 @@ export class FoodListComponent implements OnInit {
     };
     of(this.meals)
       .pipe(
-        map((meal) => {
-          return meal.map((meal) => {
+        map((meals) => {
+          return meals.map((meal) => {
             return meal.idMeal === idMeal ? { ...meal, ...data } : meal;
           });
         })
