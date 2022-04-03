@@ -23,11 +23,7 @@ export class FoodListComponent implements OnInit {
   reverse: boolean = false;
   // Pagination
   p: number = 1;
-  // Search by
-  searchKey: string = '';
-  sarchTerm: string = '';
-  // Search change by name or ingredients
-  ingredients = false;
+
   columns: TableColumn[] = [];
 
   form = this.fb.group({
@@ -72,8 +68,6 @@ export class FoodListComponent implements OnInit {
   }
 
   
-   
-  
 
   filterByMealCategory() {
     this.route.params
@@ -100,20 +94,15 @@ export class FoodListComponent implements OnInit {
         switchMap((params) => {
           this.category = params['category'];
           return this.menuService.filterByAreaCategory(this.category).pipe(
-            map((meals:Meal) => {
+            map((meals:any) => {
               return meals.meals;
             })
           );
         })
       )
-      .subscribe((meals:any) => {
+      .subscribe((meals:MealData[]) => {
         this.mealsArea = meals;
       });
-  }
-
-  searchChange() {
-    this.ingredients = !this.ingredients;
-    console.log(this.ingredients);
   }
 
   searchByIngredients(searchTerm: string) {
@@ -122,17 +111,14 @@ export class FoodListComponent implements OnInit {
       this.menuService
         .searchByMainIngredients(searchTerm)
         .pipe(
-          map((meal) => {
+          map((meal:any) => {
             return meal.meals;
           })
         )
-        .subscribe((meals: any) => {
+        .subscribe((meals: MealData[]) => {
           this.filteredMeals = meals;
         });
     }
-  }
-  search(event: any) {
-    this.searchKey = (event.target as HTMLInputElement).value;
   }
 
   sort(key: string) {
@@ -142,7 +128,7 @@ export class FoodListComponent implements OnInit {
 
 
   addMeal(id: string, foodImg: string, name: string) {
-    let data: any = { idMeal: id, strMealThumb: foodImg, strMeal: name };
+    let data: MealData = { idMeal: id, strMealThumb: foodImg, strMeal: name };
     this.meals.push(data);
   }
 
@@ -161,7 +147,7 @@ export class FoodListComponent implements OnInit {
           });
         })
       )
-      .subscribe((meal: any) => {
+      .subscribe((meal: MealData[]) => {
         this.filteredMeals = meal;
       });
   }
