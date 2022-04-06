@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map, of, Subject, takeUntil } from 'rxjs';
 import { MealDetails } from 'src/app/models/meal-details.model';
@@ -11,7 +11,7 @@ import { MenuService } from 'src/app/services/menu.service';
   templateUrl: './all-meals.component.html',
   styleUrls: ['./all-meals.component.scss'],
 })
-export class AllMealsComponent implements OnInit {
+export class AllMealsComponent implements OnInit, OnDestroy {
   meals: MealDetails[];
   showMessage = false;
   letters$ = this.menuService.getLetters()
@@ -118,5 +118,10 @@ export class AllMealsComponent implements OnInit {
 
   onNewRecipe() {
     this.router.navigate(['new'], { relativeTo: this.route });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
