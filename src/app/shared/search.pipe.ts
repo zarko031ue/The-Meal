@@ -1,12 +1,13 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { MealDetails } from '../models/meal-details.model';
 
 @Pipe({
   name: 'search'
 })
 export class SearchPipe implements PipeTransform {
 
-  transform(value : any, filterString: string, propName: string): any {
-    const result: any = []; 
+  transform(value : MealDetails[], filterString: string, propName: string): MealDetails[] {
+    const result: MealDetails[] = []; 
     if(!value || filterString === '' || propName === ''){
       return value;
     }

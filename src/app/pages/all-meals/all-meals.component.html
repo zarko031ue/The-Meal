@@ -20,19 +20,18 @@
         </div>
     </div> 
     <div class="letters" >
-        <ng-container *ngFor="let letter of letters">
+        <ng-container *ngFor="let letter of letters$ | async as letters">
             <div class="box">
               <a (click)="listAllMeals(letter)" >{{letter}}</a> 
             </div>
         </ng-container>
-        
     </div>
- <div *ngIf="message">
+ <div *ngIf="showMessage">
     <h2>No meals found</h2>
  </div>
-    <div class="row justify-content-between" *ngIf="!message" >
+    <div class="row justify-content-between" *ngIf="!showMessage" >
         <div class="col-5" >
-            <table *ngFor="let meal of meals?.meals | orderBy: key : reverse | paginate: {itemsPerPage: 4, currentPage: p} | search: searchKey : 'strMeal'" >
+            <table *ngFor="let meal of meals| orderBy: key : reverse | paginate: {itemsPerPage: 4, currentPage: p} | search: searchKey : 'strMeal'" >
                 <tr>
                   <th (click)="sort(meal.idMeal)">Id <i class="fa fa-sort" aria-hidden="true"></i></th>
                   <th >Food Img </th>

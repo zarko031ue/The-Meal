@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { MealDetails } from 'src/app/models/meal-details.model';
-import { MealData } from 'src/app/models/mealBody.model';
+import { MealsService } from 'src/app/services/meals.service';
 import { MenuService } from 'src/app/services/menu.service';
-import { FoodListComponent } from '../food-list/food-list.component';
+
 
 @Component({
   selector: 'app-food-edit',
@@ -15,18 +15,18 @@ export class FoodEditComponent implements OnInit {
   id: string;
   editMode = false;
   meal: MealDetails;
-  ingredients = [];
+  ingredients: string[] = [];
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private fb: FormBuilder,
     private manuService: MenuService,
-    private foodComponent: FoodListComponent
+    private mealsService: MealsService
   ) {}
 
   ngOnInit(): void {
-    this.manuService.ingredients.subscribe((ingredients: any[]) => {
+    this.manuService.ingredients.subscribe((ingredients: string[]) => {
       this.ingredients = ingredients;
       console.log(this.ingredients);
     });
@@ -101,15 +101,12 @@ export class FoodEditComponent implements OnInit {
 
   onSubmit(form: FormGroup) {
     console.log('form ', form);
-    console.log('form.val ', form.value);
+    console.log('form.val ', form);
 
-    const newMeal = new MealData(
-      form.value.id, form.value.name, form.value.imagePath,
-    )
     if(this.editMode){
-      this.foodComponent.updateMeal(form.value.id,form.value.name, form.value.imagePath);
+      this.mealsService.updateMeals(form.value.id,form.value.name, form.value.imagePath)
     } else {
-      this.foodComponent.addMeal(form.value.id, form.value.imagePath, form.value.name);
+      this.mealsService.addMeal(form.value.id, form.value.imagePath, form.value.name);
     }
     this.onCancel();
   }

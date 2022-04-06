@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Meal } from 'src/app/models/meal';
-import { MealData } from 'src/app/models/mealBody.model';
+import { map, of, Subject, takeUntil } from 'rxjs';
+import { MealDetails } from 'src/app/models/meal-details.model';
+import { MealBody } from 'src/app/models/meal.model';
+import { MealsService } from 'src/app/services/meals.service';
 import { MenuService } from 'src/app/services/menu.service';
 
 @Component({
@@ -10,12 +12,12 @@ import { MenuService } from 'src/app/services/menu.service';
   styleUrls: ['./all-meals.component.scss'],
 })
 export class AllMealsComponent implements OnInit {
-  meals: Meal;
-  message = false;
-  letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+  meals: MealDetails[];
+  showMessage = false;
+  letters$ = this.menuService.getLetters()
   //Sorting
-  key: string;
-  reverse: boolean = false;
+  key = '';
+  reverse = false;
   // Pagination
   p: number = 1;
   // Search by
@@ -23,46 +25,53 @@ export class AllMealsComponent implements OnInit {
   sarchTerm: string = '';
   // Search change by name or ingredients
   ingredients = false;
+  mealId = '';
+  updatedMeal: MealBody;
+  private destroy$ = new Subject<void>();
 
-  constructor(private menuService: MenuService, private router: Router, private route: ActivatedRoute) {}
+  constructor(
+    private menuService: MenuService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private mealsService: MealsService
+  ) {}
 
   ngOnInit(): void {
-    // Initialize list of meals by first letter
-    this.menuService.listAllMealsByFirstLetter('a').subscribe((meals: Meal) => {
-      this.meals = meals;
-    });
+    // Initialize list of meals by first letter A, to have some data on page when user enters the page
+    this.menuService
+      .listAllMealsByFirstLetter('a')
+      .subscribe((meals: MealDetails[]) => {
+        this.meals = meals;
+      });
+    this.updateMeal();
+    this.addMeal();
   }
-
 
   // Changing list of meals based on first letter of meal name
   listAllMeals(letter: string) {
     this.menuService
       .listAllMealsByFirstLetter(letter)
-      .subscribe((meals: Meal) => {
-        if (meals.meals === null) {
-          this.message = true;
+      .subscribe((meals: MealDetails[]) => {
+        console.log(meals);
+        if (meals === null) {
+          this.showMessage = true;
         } else {
-          this.message = false;
+          this.showMessage = false;
           this.meals = meals;
         }
         console.log(meals);
       });
   }
 
-  getLetter(letter: string) {
-    console.log(letter);
-  }
-
   searchChange() {
     this.ingredients = !this.ingredients;
-    console.log(this.ingredients);
   }
 
   searchByIngredients(searchTerm: string) {
     if (searchTerm !== '') {
       this.menuService
         .searchByMainIngredients(searchTerm)
-        .subscribe((meals: Meal) => {
+        .subscribe((meals: MealDetails[]) => {
           this.meals = meals;
         });
     }
@@ -77,17 +86,37 @@ export class AllMealsComponent implements OnInit {
     this.reverse = !this.reverse;
   }
 
-  addMeal(id: string, foodImg: string, name: string){
-    let data: any = {idMeal:id, strMealThumb:foodImg, strMeal: name}
-    this.meals.meals.push(data); 
- }
+  updateMeal() {
+    this.mealsService.updateMeals$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((meal: MealDetails) => {
+        this.mealId = meal.idMeal;
+        this.updatedMeal = meal;
+        of(this.meals)
+          .pipe(
+            map((meals: MealDetails[]) => {
+              return meals.map((meal) => {
+                return meal.idMeal === this.mealId
+                  ? { ...meal, ...this.updatedMeal }
+                  : meal;
+              });
+            })
+          )
+          .subscribe((meal: MealDetails[]) => {
+            this.meals = meal;
+          });
+      });
+  }
 
-  updateMeal(idMeal: string, newMeal: MealData) {
-    this.meals.meals[idMeal] = newMeal
-    console.log( 'mealID', this.meals.meals[idMeal])
- }
+  addMeal() {
+    this.mealsService.addMeal$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((meal: MealDetails) => {
+        this.meals.push(meal);
+      });
+  }
 
   onNewRecipe() {
-    this.router.navigate(['new'], {relativeTo:this.route});
+    this.router.navigate(['new'], { relativeTo: this.route });
   }
 }

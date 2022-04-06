@@ -53,3 +53,8 @@ strTags?: string;
 strYoutube?: string;
 
 }
+
+
+export interface MealDet {
+    meals: MealDetails[]
+}

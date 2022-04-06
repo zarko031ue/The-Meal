@@ -24,14 +24,14 @@ export class FoodDetailsComponent implements OnInit {
       })
     ).subscribe(
       (meal: any) => {
-        this.meal = meal.meals[0];        
+        this.meal = meal.meals[0];   
         this.ingredients = [];
         this.listIngredients();
       }
     )
   }
 
-  private listIngredients() {
+  private listIngredients()  {
     for (let i = 1; i < 21; i++) {
       let ingredient;
       if (this.meal[`strMeasure${i}`] !== null
@@ -41,7 +41,6 @@ export class FoodDetailsComponent implements OnInit {
         && this.meal[`strIngredient${i}`] !== '') {
         ingredient = `${this.meal[`strMeasure${i}`]} - ${this.meal[`strIngredient${i}`]}`;
         this.ingredients.push(ingredient)
-
         this.menuService.ingredients.next(this.ingredients);
       }
     }

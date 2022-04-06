@@ -39,7 +39,7 @@
                              {{col.title}}<i class="fa fa-sort" aria-hidden="true"></i>      
                         </th>
                     </tr>
-                    <tr *ngFor="let meal of mealsArea | orderBy: key : reverse | paginate: { itemsPerPage: 5, currentPage: p} | search: searchKey : 'strMeal'">
+                    <tr *ngFor="let meal of mealsArea | orderBy: key : reverse | paginate: { itemsPerPage: 5, currentPage: p}">
                         <td *ngFor="let col of columns">
                             <span *ngIf="col.field !== 'strMealThumb'">{{meal[col.field]}}</span>
                             <img  *ngIf="col.field === 'strMealThumb'" [src]="meal.strMealThumb" alt="">

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { MealDetails } from 'src/app/models/meal-details.model';
-import { MealData } from 'src/app/models/mealBody.model';
+import { MealsService } from 'src/app/services/meals.service';
 import { MenuService } from 'src/app/services/menu.service';
 import { AllMealsComponent } from '../all-meals.component';
 
@@ -21,7 +21,7 @@ export class MealEditComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private manuService: MenuService,
-    private allmeals: AllMealsComponent) { }
+    private mealsService: MealsService) { }
 
     ngOnInit(): void {
       this.manuService.ingredients.subscribe((ingredients: any[]) => {
@@ -101,13 +101,11 @@ export class MealEditComponent implements OnInit {
       console.log('form ', form);
       console.log('form.val ', form.value);
   
-      const newMeal = new MealData(
-        form.value.id, form.value.name, form.value.imagePath,
-      )
+     
       if(this.editMode){
-        this.allmeals.updateMeal(this.id, newMeal)
+        this.mealsService.updateMeals(form.value.id,form.value.name, form.value.imagePath)
       } else {
-        this.allmeals.addMeal(form.value.id, form.value.imagePath, form.value.name);
+        this.mealsService.addMeal(form.value.id, form.value.imagePath, form.value.name);
       }
       this.onCancel();
     }

@@ -1,13 +1,7 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { AboutComponent } from './pages/about/about.component';
-import { AllMealsComponent } from './pages/all-meals/all-meals.component';
-import { MealDetailsComponent } from './pages/all-meals/meal-details/meal-details.component';
-import { MealEditComponent } from './pages/all-meals/meal-edit/meal-edit.component';
 import { HomeComponent } from './pages/home/home.component';
-import { FoodDetailsComponent } from './pages/menu/food-details/food-details.component';
-import { FoodEditComponent } from './pages/menu/food-edit/food-edit.component';
-import { FoodListComponent } from './pages/menu/food-list/food-list.component';
 import { MenuComponent } from './pages/menu/menu.component';
 
 const routes: Routes = [
@@ -15,21 +9,12 @@ const routes: Routes = [
   {path: 'home', component: HomeComponent},
   {path: 'menu', component: MenuComponent},
   {path: 'about', component: AboutComponent},
-  {path: 'all-meals', component: AllMealsComponent, children: [
-    {path: 'new', component: MealEditComponent},
-    {path: ':id', component: MealDetailsComponent},
-    {path: ':id/edit', component: MealEditComponent}
-  ]},
-  {path: 'menu/:category', component: FoodListComponent, children: [
-    {path: 'new', component: FoodEditComponent},
-    {path: ':id', component: FoodDetailsComponent},
-    {path: ':id/edit', component: FoodEditComponent}
-  ]},
- 
+  {path: 'menu/:category', loadChildren: () => import('./pages/menu/menu.module').then(module => module.MenuModule)},
+  {path: 'all-meals', loadChildren: () => import('./pages/all-meals/all-meals.module').then(module => module.AllMealsModule)}
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, {preloadingStrategy: PreloadAllModules})],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

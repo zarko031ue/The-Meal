@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map, of, switchMap } from 'rxjs';
+import { map, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { TableColumn } from 'src/app/models/column.model';
-import { Meal } from 'src/app/models/meal';
-import { MealData } from 'src/app/models/mealBody.model';
+import { MealBody } from 'src/app/models/meal.model';
+
 import { Columns } from 'src/app/services/columns';
+import { MealsService } from 'src/app/services/meals.service';
 import { MenuService } from 'src/app/services/menu.service';
 
 @Component({
@@ -13,22 +14,26 @@ import { MenuService } from 'src/app/services/menu.service';
   templateUrl: './food-list.component.html',
   styleUrls: ['./food-list.component.scss'],
 })
-export class FoodListComponent implements OnInit {
-  meals: MealData[] = [];
-  mealsArea: MealData[] = [];
-  filteredMeals = [];
+export class FoodListComponent implements OnInit, OnDestroy {
+  meals: MealBody[] = [];
+  mealsArea: MealBody[] = [];
+  filteredMeals: MealBody[] = [];
   category: string;
   //Sorting
   key: string;
   reverse: boolean = false;
   // Pagination
   p: number = 1;
-
   columns: TableColumn[] = [];
+  mealId: string;
+  updatedMeal: MealBody;
+
+  private destroy$ = new Subject<void>();
 
   form = this.fb.group({
     columns: this.fb.array([]),
   });
+  
 
   get filters() {
     return this.form.get('columns') as FormArray;
@@ -39,7 +44,8 @@ export class FoodListComponent implements OnInit {
     private router: Router,
     private menuService: MenuService,
     private columnsService: Columns,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private mealsService: MealsService
   ) {}
 
   ngOnInit(): void {
@@ -65,23 +71,45 @@ export class FoodListComponent implements OnInit {
         });
       });
     });
-  }
 
-  
+    this.mealsService
+      .updateMeals$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((meal: MealBody) => {
+        this.mealId = meal.idMeal;
+        this.updatedMeal = meal;
+        of(this.meals)
+          .pipe(
+            map((meals: MealBody[]) => {
+              return meals.map((meal) => {
+                return meal.idMeal === this.mealId
+                  ? { ...meal, ...this.updatedMeal }
+                  : meal;
+              });
+            })
+          )
+          .subscribe((meal: MealBody[]) => {
+            this.filteredMeals = meal;
+          });
+      });
+
+    this.mealsService
+      .addMeal$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((meal: MealBody) => {
+        this.meals.push(meal);
+      });
+  }
 
   filterByMealCategory() {
     this.route.params
       .pipe(
         switchMap((params) => {
           this.category = params['category'];
-          return this.menuService.filterByMealCategory(this.category).pipe(
-            map((meals: Meal) => {
-              return meals.meals;
-            })
-          );
+          return this.menuService.filterByMealCategory(this.category)
         })
       )
-      .subscribe((meals: any) => {
+      .subscribe((meals: MealBody[]) => {
         this.meals = meals;
         this.filteredMeals = meals;
         console.log('cat', this.meals);
@@ -93,14 +121,11 @@ export class FoodListComponent implements OnInit {
       .pipe(
         switchMap((params) => {
           this.category = params['category'];
-          return this.menuService.filterByAreaCategory(this.category).pipe(
-            map((meals:any) => {
-              return meals.meals;
-            })
-          );
+          return this.menuService.filterByAreaCategory(this.category)
         })
       )
-      .subscribe((meals:MealData[]) => {
+      .subscribe((meals: MealBody[]) => {
+        console.log(meals);
         this.mealsArea = meals;
       });
   }
@@ -110,13 +135,8 @@ export class FoodListComponent implements OnInit {
     if (searchTerm !== '') {
       this.menuService
         .searchByMainIngredients(searchTerm)
-        .pipe(
-          map((meal:any) => {
-            return meal.meals;
-          })
-        )
-        .subscribe((meals: MealData[]) => {
-          this.filteredMeals = meals;
+        .subscribe((meals: MealBody[]) => {
+          this.filteredMeals = meals
         });
     }
   }
@@ -127,32 +147,12 @@ export class FoodListComponent implements OnInit {
   }
 
 
-  addMeal(id: string, foodImg: string, name: string) {
-    let data: MealData = { idMeal: id, strMealThumb: foodImg, strMeal: name };
-    this.meals.push(data);
-  }
-
-  updateMeal(idMeal: string, strMeal: string, strMealThumb: string) {
-    console.log('click', idMeal);
-    let data: MealData = {
-      idMeal: idMeal,
-      strMealThumb: strMealThumb,
-      strMeal: strMeal,
-    };
-    of(this.meals)
-      .pipe(
-        map((meals) => {
-          return meals.map((meal) => {
-            return meal.idMeal === idMeal ? { ...meal, ...data } : meal;
-          });
-        })
-      )
-      .subscribe((meal: MealData[]) => {
-        this.filteredMeals = meal;
-      });
-  }
-
   onNewRecipe() {
     this.router.navigate(['new'], { relativeTo: this.route });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
