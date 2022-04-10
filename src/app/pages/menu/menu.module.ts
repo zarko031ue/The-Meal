@@ -9,6 +9,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { Ng2OrderModule } from 'ng2-order-pipe';
 import { MenuRoutingModule } from './menu-routing.module';
+import { TableModule } from 'src/app/shared/table-module/table.module';
+
 
 @NgModule({
   declarations: [FoodListComponent, FoodDetailsComponent, FoodEditComponent],
@@ -18,7 +20,8 @@ import { MenuRoutingModule } from './menu-routing.module';
     ReactiveFormsModule,
     NgxPaginationModule,
     Ng2OrderModule,
-    MenuRoutingModule
+    MenuRoutingModule,
+    TableModule
   ]
 })
 export class MenuModule {}

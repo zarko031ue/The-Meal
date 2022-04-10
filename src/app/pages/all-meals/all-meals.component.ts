@@ -1,8 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map, of, Subject, takeUntil } from 'rxjs';
+import { TableColumn } from 'src/app/models/column.model';
 import { MealDetails } from 'src/app/models/meal-details.model';
 import { MealBody } from 'src/app/models/meal.model';
+import { Columns } from 'src/app/services/columns';
 import { MealsService } from 'src/app/services/meals.service';
 import { MenuService } from 'src/app/services/menu.service';
 
@@ -15,25 +17,18 @@ export class AllMealsComponent implements OnInit, OnDestroy {
   meals: MealDetails[];
   showMessage = false;
   letters$ = this.menuService.getLetters()
-  //Sorting
-  key = '';
-  reverse = false;
-  // Pagination
-  p: number = 1;
-  // Search by
-  searchKey: string = '';
-  sarchTerm: string = '';
-  // Search change by name or ingredients
-  ingredients = false;
+  columns: TableColumn[] = [];
   mealId = '';
   updatedMeal: MealBody;
+  
   private destroy$ = new Subject<void>();
 
   constructor(
     private menuService: MenuService,
     private router: Router,
     private route: ActivatedRoute,
-    private mealsService: MealsService
+    private mealsService: MealsService,
+    private columnService: Columns
   ) {}
 
   ngOnInit(): void {
@@ -45,6 +40,7 @@ export class AllMealsComponent implements OnInit, OnDestroy {
       });
     this.updateMeal();
     this.addMeal();
+    this.columns = this.columnService.columns
   }
 
   // Changing list of meals based on first letter of meal name
@@ -61,29 +57,6 @@ export class AllMealsComponent implements OnInit, OnDestroy {
         }
         console.log(meals);
       });
-  }
-
-  searchChange() {
-    this.ingredients = !this.ingredients;
-  }
-
-  searchByIngredients(searchTerm: string) {
-    if (searchTerm !== '') {
-      this.menuService
-        .searchByMainIngredients(searchTerm)
-        .subscribe((meals: MealDetails[]) => {
-          this.meals = meals;
-        });
-    }
-  }
-
-  searchByName(searchTerm: string) {
-    this.searchKey = searchTerm;
-  }
-
-  sort(key: string) {
-    this.key = key;
-    this.reverse = !this.reverse;
   }
 
   updateMeal() {

@@ -24,7 +24,8 @@ export class FoodDetailsComponent implements OnInit {
       })
     ).subscribe(
       (meal: any) => {
-        this.meal = meal.meals[0];   
+        this.meal = meal.meals[0]; 
+        console.log(this.ingredients)  
         this.ingredients = [];
         this.listIngredients();
       }

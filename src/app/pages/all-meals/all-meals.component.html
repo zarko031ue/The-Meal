@@ -1,19 +1,4 @@
 <div class="container">
-    <button class="btn btn-outline-success mb-2" (click)="searchChange()">{{ingredients ? 'Search by Name' : 'Search by Ingredients'}} </button>
-    <div class="search-box mb-5">
-        <div class="search-name" *ngIf="!ingredients">
-            <div class="search-content">
-                <input type="text" #searchTerm placeholder="Search by Name">
-                <button type="button" (click)="searchByName(searchTerm.value)">Search</button>
-            </div>
-        </div>
-        <div class="search-ingredients" *ngIf="ingredients">
-            <div class="search-content">
-                <input type="text" #searchTerm placeholder="Search by Ingredients">
-                <button type="button" (click)="searchByIngredients(searchTerm.value)">Search</button>
-            </div>
-        </div>
-    </div> 
     <div class="row">
         <div class="col-md-12 mb-2">
             <button class="btn btn-success" (click)="onNewRecipe()">New Meal</button>
@@ -31,30 +16,15 @@
  </div>
     <div class="row justify-content-between" *ngIf="!showMessage" >
         <div class="col-5" >
-            <table *ngFor="let meal of meals| orderBy: key : reverse | paginate: {itemsPerPage: 4, currentPage: p} | search: searchKey : 'strMeal'" >
-                <tr>
-                  <th (click)="sort(meal.idMeal)">Id <i class="fa fa-sort" aria-hidden="true"></i></th>
-                  <th >Food Img </th>
-                  <th (click)="sort(meal.strMeal)">Name <i class="fa fa-sort" aria-hidden="true"></i></th>
-                  <th>Details</th>
-                </tr>
-                <tr>
-                  <td>{{meal.idMeal}}</td>
-                  <td><img [src]="meal.strMealThumb" alt=""></td>
-                  <td>{{meal.strMeal}} </td>
-                  <td><button class="btn btn-success" [routerLink]="[meal.idMeal]">Details</button></td>
-                </tr>
-            </table>
-            <div class="mt-5">
-                <pagination-controls (pageChange)="p = $event"></pagination-controls>
-            </div>           
-        </div>
-      
+            <app-table [columns]="columns" [gridData]="meals" [filteredData]="meals"></app-table> 
+        </div>    
         <div class="col-5">
             <router-outlet></router-outlet>
         </div>
     </div>
 </div>
+
+
 
 
 

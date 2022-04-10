@@ -10,6 +10,7 @@ import { AllMealsComponent } from './all-meals.component';
 import { MealDetailsComponent } from './meal-details/meal-details.component';
 import { MealEditComponent } from './meal-edit/meal-edit.component';
 import { SearchPipe } from 'src/app/shared/search.pipe';
+import { TableModule } from 'src/app/shared/table-module/table.module';
 
 
 @NgModule({
@@ -17,7 +18,7 @@ import { SearchPipe } from 'src/app/shared/search.pipe';
     AllMealsComponent,
     MealEditComponent,
     MealDetailsComponent,
-    SearchPipe
+    SearchPipe,
   ],
   imports: [
     RouterModule,
@@ -26,6 +27,7 @@ import { SearchPipe } from 'src/app/shared/search.pipe';
     NgxPaginationModule,
     Ng2OrderModule,
     AllMealsRoutingModule,
+    TableModule
   ],
   
 })

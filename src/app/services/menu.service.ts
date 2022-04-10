@@ -11,7 +11,7 @@ import { Meals } from '../models/meal.model';
 export class MenuService {
   public ingredients = new BehaviorSubject<string[]>([]);
   letters = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
-
+  
   foodCatURL = 'https://www.themealdb.com/api/json/v1/1/list.php?c=list';
   nationalDishesURL = 'https://www.themealdb.com/api/json/v1/1/list.php?a=list';
   categoryURL = 'https://www.themealdb.com/api/json/v1/1/filter.php?c=';

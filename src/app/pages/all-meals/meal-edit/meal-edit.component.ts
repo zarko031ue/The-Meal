@@ -4,7 +4,6 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { MealDetails } from 'src/app/models/meal-details.model';
 import { MealsService } from 'src/app/services/meals.service';
 import { MenuService } from 'src/app/services/menu.service';
-import { AllMealsComponent } from '../all-meals.component';
 
 @Component({
   selector: 'app-meal-edit',

@@ -1,8 +1,4 @@
 <div class="container">
-    <div class="search-content mb-">
-        <input type="text" #searchTerm placeholder="Search by Ingredients">
-        <button type="button" (click)="searchByIngredients(searchTerm.value)">Search</button>
-    </div>
     <div class="row">
         <div class="col-md-12">
             <h3>{{category}}</h3>
@@ -15,42 +11,9 @@
     </div>
         <div class="row justify-content-between" >
             <div class="col-5">
-
-                <form [formGroup]="form">
-                <table *ngIf="meals" formArrayName="columns">
-                    <tr >
-                        <th *ngFor="let col of columns; let i = index"  [formGroupName]="i">
-                             {{col.title}}<i (click)="sort(col.field)" class="fa fa-sort" aria-hidden="true"></i>    
-                             <input *ngIf="col.field !== 'strMealThumb'" type="text" formControlName="name">
-                        </th>
-                    </tr>
-                    <tr *ngFor="let meal of filteredMeals | orderBy: key : reverse | paginate: { itemsPerPage: 5, currentPage: p} " >
-                        <td *ngFor="let col of columns" >
-                          <span *ngIf="col.field !== 'strMealThumb'" >{{meal[col.field]}}</span>  
-                          <img *ngIf="col.field === 'strMealThumb'" [src]="meal.strMealThumb" alt="">
-                        </td>
-                      <td><button class="btn btn-success" [routerLink]="[meal.idMeal]">Details</button></td>
-                    </tr>
-                </table>
-               </form>
-                <table *ngIf="mealsArea" >
-                    <tr>
-                        <th *ngFor="let col of columns; let i = index" (click)="sort(col.field)" >
-                             {{col.title}}<i class="fa fa-sort" aria-hidden="true"></i>      
-                        </th>
-                    </tr>
-                    <tr *ngFor="let meal of mealsArea | orderBy: key : reverse | paginate: { itemsPerPage: 5, currentPage: p}">
-                        <td *ngFor="let col of columns">
-                            <span *ngIf="col.field !== 'strMealThumb'">{{meal[col.field]}}</span>
-                            <img  *ngIf="col.field === 'strMealThumb'" [src]="meal.strMealThumb" alt="">
-                        </td>
-                        <td><button class="btn btn-success" [routerLink]="[meal.idMeal]">Details</button></td>
-                    </tr>
-                </table>
-                    <div class="mt-5">
-                        <pagination-controls  (pageChange)="p = $event"></pagination-controls>
-                    </div>
-            </div>           
+                <app-table *ngIf="meals" [columns]="columns" [gridData]="meals" [filteredData]="meals"></app-table> 
+                <app-table *ngIf="mealsArea" [columns]="columns" [gridData]="mealsArea" [filteredData]="mealsArea"></app-table> 
+            </div>    
             <div class="col-5">
                 <router-outlet></router-outlet>
             </div>
