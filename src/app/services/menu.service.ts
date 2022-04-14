@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable, of } from 'rxjs';
+import { BehaviorSubject, map, Observable, of, Subject } from 'rxjs';
 import { AreaCategories, Categories } from '../models/category.model';
 import { MealDet, MealDetails } from '../models/meal-details.model';
 import { Meals } from '../models/meal.model';
@@ -10,6 +10,10 @@ import { Meals } from '../models/meal.model';
 })
 export class MenuService {
   public ingredients = new BehaviorSubject<string[]>([]);
+  public search = new Subject<string>();
+
+  searchValue$ = this.search.asObservable();
+  
   letters = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
   
   foodCatURL = 'https://www.themealdb.com/api/json/v1/1/list.php?c=list';

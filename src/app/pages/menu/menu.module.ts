@@ -6,8 +6,6 @@ import { FoodDetailsComponent } from './food-details/food-details.component';
 import { FoodEditComponent } from './food-edit/food-edit.component';
 import { FoodListComponent } from './food-list/food-list.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { NgxPaginationModule } from 'ngx-pagination';
-import { Ng2OrderModule } from 'ng2-order-pipe';
 import { MenuRoutingModule } from './menu-routing.module';
 import { TableModule } from 'src/app/shared/table-module/table.module';
 
@@ -18,8 +16,6 @@ import { TableModule } from 'src/app/shared/table-module/table.module';
     RouterModule,
     CommonModule,
     ReactiveFormsModule,
-    NgxPaginationModule,
-    Ng2OrderModule,
     MenuRoutingModule,
     TableModule
   ]

@@ -16,7 +16,7 @@
  </div>
     <div class="row justify-content-between" *ngIf="!showMessage" >
         <div class="col-5" >
-            <app-table [columns]="columns" [gridData]="meals" [filteredData]="meals"></app-table> 
+            <app-table [columns]="columns" [gridData]="meals" [filteredData]="filteredMeals"></app-table> 
         </div>    
         <div class="col-5">
             <router-outlet></router-outlet>

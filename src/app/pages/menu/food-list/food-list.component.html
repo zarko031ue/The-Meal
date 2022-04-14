@@ -11,8 +11,19 @@
     </div>
         <div class="row justify-content-between" >
             <div class="col-5">
-                <app-table *ngIf="meals" [columns]="columns" [gridData]="meals" [filteredData]="meals"></app-table> 
-                <app-table *ngIf="mealsArea" [columns]="columns" [gridData]="mealsArea" [filteredData]="mealsArea"></app-table> 
+                <app-table 
+                *ngIf="meals" 
+                [columns]="columns" 
+                [gridData]="meals"
+                [filteredData]="filteredMeals"  
+                ></app-table> 
+                <app-table 
+                *ngIf="mealsArea" 
+                [columns]="columns" 
+                [gridData]="mealsArea"
+                [filteredData]="fileredArea">
+     
+                </app-table> 
             </div>    
             <div class="col-5">
                 <router-outlet></router-outlet>
