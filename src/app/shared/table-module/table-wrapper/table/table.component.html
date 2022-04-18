@@ -4,13 +4,13 @@
 </div>
 <form [formGroup]="form">
     <table formArrayName="columns">
-         <tr >
-            <th *ngFor="let col of columns; let i = index"  [formGroupName]="i">
-                {{col.title}}<i (click)="sort()" class="fa fa-sort" aria-hidden="true"></i>    
-                <input *ngIf="col.field !== 'strMealThumb'" type="text" formControlName="name">
+         <tr>
+            <th *ngFor="let col of columns; let i = index" [formGroupName]="i">
+                {{col.title}}<i *ngIf="col.sortable" (click)="sort(col.field)" class="fa fa-sort"></i>    
+                <input *ngIf="col.searchable" type="text" formControlName="name">
             </th>
         </tr>
-        <tr *ngFor="let data of filteredData">
+        <tr *ngFor="let data of filteredData ">
             <td *ngFor="let col of columns">
                 <span *ngIf="col.field !== 'strMealThumb'" >{{data[col.field]}}</span>  
                 <img *ngIf="col.field === 'strMealThumb'" [src]="data.strMealThumb" alt="">
@@ -20,7 +20,12 @@
     </table>
 </form>
 <div>
-    {{pageData.start + 1}} <span>-</span> {{pageData.end}} of {{size}}
+  <a (click)="goToFirst()">First</a>
+  <a (click)="goToPrev()">Prev</a>
+  <a *ngFor="let page of pages" (click)="changePage(page)" [ngClass]="{active: page == currentPage }">
+    {{ page }}
+  </a>
+  <a (click)="next()"> Next </a>
+  <a (click)="last()"> Last </a>
 </div>
-<button (click)="prev()">Prev</button>
-<button (click)="next()">Next</button>
+

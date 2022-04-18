@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map, of, Subject, switchMap, takeUntil } from 'rxjs';
+import { map, mergeMap, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { TableColumn } from 'src/app/models/column.model';
 import { MealDetails } from 'src/app/models/meal-details.model';
 import { MealBody } from 'src/app/models/meal.model';
@@ -14,14 +14,12 @@ import { MenuService } from 'src/app/services/menu.service';
   styleUrls: ['./all-meals.component.scss'],
 })
 export class AllMealsComponent implements OnInit, OnDestroy {
-  meals: MealDetails[] = []
-  filteredMeals: MealDetails[]= []
+  meals: MealDetails[] = [];
   showMessage = false;
   letters$ = this.menuService.getLetters();
   columns: TableColumn[] = [];
   mealId = '';
   updatedMeal: MealBody;
-
 
   private destroy$ = new Subject<void>();
 
@@ -39,13 +37,10 @@ export class AllMealsComponent implements OnInit, OnDestroy {
       .listAllMealsByFirstLetter('a')
       .subscribe((meals: MealDetails[]) => {
         this.meals = meals;
-        this.filteredMeals = meals?.slice(0,5);
-        console.log(this.filteredMeals)
       });
     this.updateMeal();
     this.addMeal();
     this.columns = this.columnService.columns;
-    this.searchByIngredients();
   }
 
   // Changing list of meals based on first letter of meal name
@@ -59,7 +54,6 @@ export class AllMealsComponent implements OnInit, OnDestroy {
         } else {
           this.showMessage = false;
           this.meals = meals;
-          this.filteredMeals = meals?.slice(0,5);
         }
         console.log(meals);
       });
@@ -82,7 +76,7 @@ export class AllMealsComponent implements OnInit, OnDestroy {
             })
           )
           .subscribe((meal: MealDetails[]) => {
-            this.filteredMeals = meal;
+            this.meals = meal;
           });
       });
   }
@@ -91,20 +85,8 @@ export class AllMealsComponent implements OnInit, OnDestroy {
     this.mealsService.addMeal$
       .pipe(takeUntil(this.destroy$))
       .subscribe((meal: MealDetails) => {
-        this.filteredMeals.push(meal);
+        this.meals.push(meal);
       });
-  }
-
-  searchByIngredients() {
-    this.menuService.searchValue$
-      .pipe(
-        switchMap((val: string) => {
-          return this.menuService.searchByMainIngredients(val)
-        })
-      )
-      .subscribe((meals: MealDetails[]) => {
-       this.filteredMeals = meals;
-      })
   }
 
   onNewRecipe() {

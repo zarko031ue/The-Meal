@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map, of, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { map, of, Subject, switchMap,takeUntil } from 'rxjs';
 import { TableColumn } from 'src/app/models/column.model';
 import { MealBody } from 'src/app/models/meal.model';
 
@@ -16,14 +16,12 @@ import { MenuService } from 'src/app/services/menu.service';
 export class FoodListComponent implements OnInit, OnDestroy {
   meals: MealBody[] = [];
   mealsArea: MealBody[] = [];
-  filteredMeals: MealBody[] = [];
-  fileredArea: MealBody[] = []; 
   category: string;
   columns: TableColumn[] = [];
   mealId: string;
   updatedMeal: MealBody;
   searchTerm: string;
-
+  
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -37,7 +35,6 @@ export class FoodListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.filterByMealCategory();
     this.filterByAreaCategory();
-    this.searchByIngredients();
     this.columns = this.columnsService.columns;
 
     this.mealsService.updateMeals$
@@ -56,14 +53,14 @@ export class FoodListComponent implements OnInit, OnDestroy {
             })
           )
           .subscribe((meal: MealBody[]) => {
-            this.filteredMeals = meal;
+            this.meals = meal;
           });
       });
 
     this.mealsService.addMeal$
       .pipe(takeUntil(this.destroy$))
       .subscribe((meal: MealBody) => {
-        this.filteredMeals.push(meal);
+        this.meals.push(meal);
       });
   }
 
@@ -77,8 +74,6 @@ export class FoodListComponent implements OnInit, OnDestroy {
       )
       .subscribe((meals: MealBody[]) => {
         this.meals = meals;
-        this.filteredMeals =meals?.slice(0,5)
-        console.log('cat', this.filteredMeals);
       });
   }
 
@@ -92,24 +87,6 @@ export class FoodListComponent implements OnInit, OnDestroy {
       )
       .subscribe((meals: MealBody[]) => {
         this.mealsArea = meals;
-        this.fileredArea = meals?.slice(0,5)
-      });
-  }
-
-  searchByIngredients() {
-    this.menuService.searchValue$
-      .pipe(
-        switchMap((val: string) => {
-          return this.menuService.searchByMainIngredients(val)
-        })
-      )
-      .subscribe((meals: MealBody[]) => {
-        if (this.meals) {
-          this.filteredMeals = meals;
-          console.log(meals)
-        } else {
-          this.fileredArea = meals;
-        }
       });
   }
 

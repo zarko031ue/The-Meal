@@ -10,8 +10,12 @@ import { MenuRoutingModule } from './menu-routing.module';
 import { TableModule } from 'src/app/shared/table-module/table.module';
 
 
+
 @NgModule({
-  declarations: [FoodListComponent, FoodDetailsComponent, FoodEditComponent],
+  declarations: [
+    FoodListComponent, 
+    FoodDetailsComponent, 
+    FoodEditComponent],
   imports: [
     RouterModule,
     CommonModule,
