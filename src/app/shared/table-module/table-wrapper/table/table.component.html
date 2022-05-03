@@ -1,0 +1,31 @@
+<div class="search-content mb-5">
+    <input type="text" #searchTerm placeholder="Search by Ingredients">
+    <button type="button" (click)="search(searchTerm.value)">Search</button>
+</div>
+<form [formGroup]="form">
+    <table formArrayName="columns">
+         <tr>
+            <th *ngFor="let col of columns; let i = index" [formGroupName]="i">
+                {{col.title}}<i *ngIf="col.sortable" (click)="sort(col.field)" class="fa fa-sort"></i>    
+                <input *ngIf="col.searchable" type="text" formControlName="name">
+            </th>
+        </tr>
+        <tr *ngFor="let data of filteredData ">
+            <td *ngFor="let col of columns">
+                <span *ngIf="col.field !== 'strMealThumb'" >{{data[col.field]}}</span>  
+                <img *ngIf="col.field === 'strMealThumb'" [src]="data.strMealThumb" alt="">
+            </td>
+            <td><button class="btn btn-success" [routerLink]="[data.idMeal]">Details</button></td>
+        </tr>
+    </table>
+</form>
+<div>
+  <a (click)="goToFirst()">First</a>
+  <a (click)="goToPrev()">Prev</a>
+  <a *ngFor="let page of pages" (click)="changePage(page)" [ngClass]="{active: page == currentPage }">
+    {{ page }}
+  </a>
+  <a (click)="next()"> Next </a>
+  <a (click)="last()"> Last </a>
+</div>
+

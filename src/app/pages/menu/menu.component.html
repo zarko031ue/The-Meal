@@ -1,0 +1,27 @@
+<div class="banner"></div>
+<div class="container" >      
+    <form [formGroup]="form" class="search-bar">
+        <input type="text" placeholder="Search.." formControlName="value">
+            <div class="row justify-content-between">
+                <div class="col">
+                    <h5>Food Categories:</h5>
+                    <div class="food-categories" *ngFor="let category of filteredMealsCategories">
+                        <a [routerLink]="[category.strCategory]" (click)="filterByMealCategory(category.strCategory)">{{category.strCategory}}</a>
+                    </div>
+                </div>
+                <div class="col">
+                    <h5>National Dishes:</h5>
+                    <div class="national-dishes" *ngFor="let category of filteredNationalCategories">
+                        <a [routerLink]="[category.strArea]" (click)="filterByAreaCategory(category.strArea)">{{category.strArea}}</a>
+                    </div>
+                </div>
+                <div class="col">
+                    <button [routerLink]="['/all-meals']" class="btn btn-success mr-2">All Meals</button>
+                </div>
+            </div>
+    </form>
+</div>
+
+
+
+

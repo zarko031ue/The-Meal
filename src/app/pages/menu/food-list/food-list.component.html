@@ -1,0 +1,22 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h3>{{category}}</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 mb-2">
+            <button class="btn btn-success" (click)="onNewRecipe()">New Meal</button>
+        </div>
+    </div>
+        <div class="row justify-content-between" >
+            <div class="col-5">
+              <app-table-wrapper *ngIf="meals" [data]="meals" [columns]="columns"></app-table-wrapper>
+              <app-table-wrapper *ngIf="mealsArea" [data]="mealsArea" [columns]="columns"></app-table-wrapper>
+            </div>    
+            <div class="col-5">
+                <router-outlet></router-outlet>
+            </div>
+        </div>
+   
+</div>
